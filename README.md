@@ -5,7 +5,7 @@
 
 
 **Project uses**
- * [bratreader] for for reading Brat Repositories
+ * [bratreader] for reading Brat Repositories
 
 
 
