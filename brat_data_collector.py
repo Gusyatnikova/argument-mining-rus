@@ -15,7 +15,7 @@ class BratDataCollector:
         link_list = []
         doc_features = {}
         for annotation in set(brat_doc.annotations):
-            print(brat_doc)
+            # print(brat_doc)
             # print("annotation :", annotation.repr)
             # print("labels :", annotation.labels.items())
             # print("links :", annotation.links)
