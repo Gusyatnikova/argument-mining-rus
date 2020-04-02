@@ -2,13 +2,7 @@
 class DataManager:
 
     def __init__(self):
-        '''
-    def args_filter(self, argument):
-        if argument == 'Premise' or argument == 'Claim' or argument == 'MajorClaim':
-            return True
-        else:
-            return False
-'''
+        pass
 
     @staticmethod
     def filter_labels(data, correct_labels):
@@ -31,3 +25,11 @@ class DataManager:
                         for sub_link in link.items():
                             filtered_links.append(sub_link)
         return filtered_links
+
+    @staticmethod
+    def divide_sentences(sentences):
+        divided = []
+        for(label, words) in sentences:
+            divided_lowercase = [x.lower() for x in words.split() if len(x) >= 3]
+            divided.append((label, divided_lowercase))
+        return divided
