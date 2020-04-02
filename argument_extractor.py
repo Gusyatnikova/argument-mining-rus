@@ -10,3 +10,4 @@ brat_reader = RepoModel(brat_folder)
 collector = BratDataCollector(brat_reader)
 data = collector.collect_data()
 classificator = Classification().set_data(data)
+a = 4

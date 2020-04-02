@@ -1,22 +1,25 @@
+from data_manager import DataManager
+
+correct_labels = ['Premise', 'Claim', 'MajorClaim']
+correct_links = ['Support', 'Attacks']
+
+
 class Classification:
 
     def __init__(self):
         self.data = []
-        self.pre_train_data = []
+        self.divided_args = []
+        self.divided_links = []
         pass
 
     def set_data(self, data):
         self.data = data
-        # self.prepare_train_data()
-        # call reformat data to pre_train_data
+        self.divided_args = DataManager().filter_labels(data, correct_labels)
+        self.divided_links = DataManager().filter_links(data)
+        a = 4
         pass
 
     '''
-    def args_filter(self, argument):
-        if argument == 'Premise' or argument == 'Claim' or argument == 'MajorClaim':
-            return True
-        else:
-            return False
 
     def prepare_train_data(self):
         arguments = []
