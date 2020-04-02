@@ -1,5 +1,5 @@
 from pathlib import Path
-
+import argument_classification
 from brat_data_collector import BratDataCollector
 from bratreader.repomodel import RepoModel
 from argument_classification import Classification
@@ -9,4 +9,11 @@ brat_folder = Path('C:\\Users\\crysn\\Desktop\\Диплом\\prog\\essays\\origi
 brat_reader = RepoModel(brat_folder)
 collector = BratDataCollector(brat_reader)
 data = collector.collect_data()
-classificator = Classification().set_data(data)
+
+Classification().set_data(data)
+arguments = argument_classification.divided_args
+links = argument_classification.divided_links
+# how visualise results?
+arguments_features = Classification().getFeatures(arguments)
+links_features = Classification().getFeatures(links)
+a = 4
