@@ -1,3 +1,5 @@
+import nltk as nltk
+
 from data_manager import DataManager
 
 correct_labels = ['Premise', 'Claim', 'MajorClaim']
@@ -20,8 +22,10 @@ class Classification:
         divided_links = DataManager().divide_sentences(links)
 
     @staticmethod
-    def getFeatures(self, words):
-        a = 4
+    def getFeatures(words):
+        content = DataManager().get_content(words)
+        features = nltk.FreqDist(content).keys()
+        return features
 
 
 
