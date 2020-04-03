@@ -54,3 +54,4 @@ links_sklearn_classifier = SklearnClassifier.train.train(links_training_set)
 args_logisticreg_classifier = SklearnClassifier(LogisticRegression()).train(arguments_training_set)
 links_logisticreg_classifier = SklearnClassifier(LogisticRegression()).train(links_training_set)
 
+test_data = collector.get_test_data('essay81')

@@ -31,4 +31,21 @@ class BratDataCollector:
             doc_features.append(ann_features)
         return {doc_key: doc_features}
 
+    def get_test_data(self, doc_key):
+        document = self.brat_reader.documents[doc_key]
+        annotation_list = []
+        for annotation in set(document.annotations):
+            annotation_list.append({'annotation': annotation.repr,
+                                    'labels': annotation.labels.items(),
+                                    'links': annotation.links})
+        data = self.extract_test_sentences(annotation_list)
+        return data
+
+    def extract_test_sentences(self, data):
+        sentences = []
+        for line in data:
+            sentences.append(line['annotation'])
+        return sentences
+
+
 
