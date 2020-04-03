@@ -4,6 +4,10 @@ import nltk
 from brat_data_collector import BratDataCollector
 from bratreader.repomodel import RepoModel
 from argument_classification import Classification
+# todo: delete after moving classify block to classification file
+from nltk.classify import SklearnClassifier
+from sklearn.linear_model import LogisticRegression
+
 
 # will this path to brat repository be the field of UI?
 brat_folder = Path('C:\\Users\\crysn\\Desktop\\Диплом\\prog\\essays\\original')
@@ -37,9 +41,16 @@ def extract_features(document):
         features['hold(%s)' % word] = (word in set(document))
     return features
 
-
-argument_training_set = nltk.classify.apply_features(extract_features, arguments)
+# todo: move this section to argument_classification
+arguments_training_set = nltk.classify.apply_features(extract_features, arguments)
 links_training_set = nltk.classify.apply_features(extract_features, links)
 
+args_naivebayes_classifier = nltk.classify.NaiveBayesClassifier.train(arguments_training_set)
+links_naivebayes_classifier = nltk.classify.NaiveBayesClassifier.train(links_training_set)
 
+args_sklearn_classifier = SklearnClassifier.train(arguments_training_set)
+links_sklearn_classifier = SklearnClassifier.train.train(links_training_set)
+
+args_logisticreg_classifier = SklearnClassifier(LogisticRegression()).train(arguments_training_set)
+links_logisticreg_classifier = SklearnClassifier(LogisticRegression()).train(links_training_set)
 

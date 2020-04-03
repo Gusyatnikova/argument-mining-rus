@@ -1,3 +1,4 @@
+# todo: rename file
 import nltk as nltk
 
 from data_manager import DataManager
@@ -26,7 +27,5 @@ class Classification:
         content = DataManager().get_content(words)
         features = nltk.FreqDist(content).keys()
         return features
-
-
 
 
