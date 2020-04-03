@@ -31,5 +31,15 @@ class DataManager:
         divided = []
         for(label, words) in sentences:
             divided_lowercase = [x.lower() for x in words.split() if len(x) >= 3]
-            divided.append((label, divided_lowercase))
+            # divided.append((label, divided_lowercase))
+            divided.append((divided_lowercase, label))
         return divided
+
+    @staticmethod
+    def get_content(sentences):
+        content = []
+        # for (label, words) in sentences:
+        for (words, label) in sentences:
+            if words is not None:
+                content.extend(words)
+        return content
