@@ -43,6 +43,8 @@ def extract_features(document):
     return features
 
 # todo: move this section to argument_classification
+# todo: divide training classifiers, save it to dir
+# todo: use saved classifiers for classify, will be faster
 arguments_training_set = nltk.classify.apply_features(extract_features, arguments)
 links_training_set = nltk.classify.apply_features(extract_features, links)
 
@@ -62,7 +64,7 @@ try get some predictions
 '''
 args_predicted = []
 links_predicted = []
-
+total_equals = 0
 for sentence in test_data:
     naivebayes_prediction = args_naivebayes_classifier.classify(extract_features(sentence.split()))
     print('Naive Bayes Prediction \n')
@@ -71,8 +73,18 @@ for sentence in test_data:
     args_predicted.append((sentence, naivebayes_prediction))
 
     sklearn_prediction = args_naivebayes_classifier.classify(extract_features(sentence.split()))
-    print('Naive Bayes Prediction \n')
-    print((sentence, naivebayes_prediction))
+    print('Sklearn Prediction \n')
+    print((sentence, sklearn_prediction))
     print('************************************************')
-    args_predicted.append((sentence, naivebayes_prediction))
+    args_predicted.append((sentence, sklearn_prediction))
 
+    logisticregression_prediction = args_logisticreg_classifier.classify(extract_features(sentence.split()))
+    print('Logistic Regression Prediction \n')
+    print((sentence, logisticregression_prediction))
+    print('************************************************')
+    args_predicted.append((sentence, logisticregression_prediction))
+
+    if naivebayes_prediction == sklearn_prediction == logisticregression_prediction:
+        total_equals = total_equals + 1
+        print('\n Prediction is equal to: ', (sentence, sklearn_prediction))
+print(' all_sentences: ', len(test_data), ' matches: ', total_equals, ' matches%: ', total_equals/len(test_data))
