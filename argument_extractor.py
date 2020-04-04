@@ -7,6 +7,7 @@ from argument_classification import Classification
 # todo: delete after moving classify block to classification file
 from nltk.classify import SklearnClassifier
 from sklearn.linear_model import LogisticRegression
+from sklearn.naive_bayes import MultinomialNB, BernoulliNB
 
 
 # will this path to brat repository be the field of UI?
@@ -48,10 +49,30 @@ links_training_set = nltk.classify.apply_features(extract_features, links)
 args_naivebayes_classifier = nltk.classify.NaiveBayesClassifier.train(arguments_training_set)
 links_naivebayes_classifier = nltk.classify.NaiveBayesClassifier.train(links_training_set)
 
-args_sklearn_classifier = SklearnClassifier.train(arguments_training_set)
-links_sklearn_classifier = SklearnClassifier.train.train(links_training_set)
+args_sklearn_classifier = SklearnClassifier(MultinomialNB()).train(arguments_training_set)
+links_sklearn_classifier = SklearnClassifier(MultinomialNB()).train(links_training_set)
 
 args_logisticreg_classifier = SklearnClassifier(LogisticRegression()).train(arguments_training_set)
 links_logisticreg_classifier = SklearnClassifier(LogisticRegression()).train(links_training_set)
 
 test_data = collector.get_test_data('essay81')
+
+'''
+try get some predictions
+'''
+args_predicted = []
+links_predicted = []
+
+for sentence in test_data:
+    naivebayes_prediction = args_naivebayes_classifier.classify(extract_features(sentence.split()))
+    print('Naive Bayes Prediction \n')
+    print((sentence, naivebayes_prediction))
+    print('************************************************')
+    args_predicted.append((sentence, naivebayes_prediction))
+
+    sklearn_prediction = args_naivebayes_classifier.classify(extract_features(sentence.split()))
+    print('Naive Bayes Prediction \n')
+    print((sentence, naivebayes_prediction))
+    print('************************************************')
+    args_predicted.append((sentence, naivebayes_prediction))
+
