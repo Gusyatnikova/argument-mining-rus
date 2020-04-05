@@ -8,7 +8,7 @@ from argument_classification import Classification
 from nltk.classify import SklearnClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.naive_bayes import MultinomialNB, BernoulliNB
-
+from deeppavlov import build_model, configs
 
 # will this path to brat repository be the field of UI?
 brat_folder = Path('C:\\Users\\crysn\\Desktop\\Диплом\\prog\\essays\\original')
@@ -45,6 +45,7 @@ def extract_features(document):
 # todo: move this section to argument_classification
 # todo: divide training classifiers, save it to dir
 # todo: use saved classifiers for classify, will be faster
+
 arguments_training_set = nltk.classify.apply_features(extract_features, arguments)
 links_training_set = nltk.classify.apply_features(extract_features, links)
 
@@ -59,12 +60,23 @@ links_logisticreg_classifier = SklearnClassifier(LogisticRegression()).train(lin
 
 test_data = collector.get_test_data('essay81')
 
+# deeppavlov usage rusentiment_elmo_twitter_cnn.json
+
+# snips_model(["Hello! What is the weather in Boston tomorrow?"])
+print('1')
+# path_to_deeppavlov = 'D:\\education\\НГУ 8\\Диплом\\prog\\argument-mining-rus\\Lib\\site-packages\\deeppavlov\\configs\\classifiers'
+print('2')
+# can i save it to pickle files?
+# deeppavlov_model = build_model(path_to_deeppavlov + '\\rusentiment_elmo_twitter_cnn.json')
+deeppavlov_model = build_model(configs.classifiers.sentiment_twitter, download=True)
+print('3')
 '''
 try get some predictions
 '''
 args_predicted = []
 links_predicted = []
 total_equals = 0
+
 for sentence in test_data:
     naivebayes_prediction = args_naivebayes_classifier.classify(extract_features(sentence.split()))
     print('Naive Bayes Prediction \n')
@@ -86,5 +98,6 @@ for sentence in test_data:
 
     if naivebayes_prediction == sklearn_prediction == logisticregression_prediction:
         total_equals = total_equals + 1
-        print('\n Prediction is equal to: ', (sentence, sklearn_prediction))
+        print('\n Prediction is equal to: ', (sentence, sklearn_prediction),
+              '\n sentiment: ', deeppavlov_model([sentence]))
 print(' all_sentences: ', len(test_data), ' matches: ', total_equals, ' matches%: ', total_equals/len(test_data))
