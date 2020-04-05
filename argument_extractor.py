@@ -1,13 +1,12 @@
 from pathlib import Path
-import argument_classification
+import classification
 import nltk
+import pickle_files
+import pickle
 from brat_data_collector import BratDataCollector
 from bratreader.repomodel import RepoModel
-from argument_classification import Classification
-# todo: delete after moving classify block to classification file
-from nltk.classify import SklearnClassifier
-from sklearn.linear_model import LogisticRegression
-from sklearn.naive_bayes import MultinomialNB, BernoulliNB
+from classification import Classification
+
 from deeppavlov import build_model, configs
 
 # will this path to brat repository be the field of UI?
@@ -17,8 +16,8 @@ collector = BratDataCollector(brat_reader)
 data = collector.collect_data()
 
 Classification().set_data(data)
-arguments = argument_classification.divided_args
-links = argument_classification.divided_links
+arguments = classification.divided_args
+links = classification.divided_links
 # how visualise results?
 arguments_features = Classification().getFeatures(arguments)
 # print(arguments_features)
@@ -49,27 +48,26 @@ def extract_features(document):
 arguments_training_set = nltk.classify.apply_features(extract_features, arguments)
 links_training_set = nltk.classify.apply_features(extract_features, links)
 
-args_naivebayes_classifier = nltk.classify.NaiveBayesClassifier.train(arguments_training_set)
-links_naivebayes_classifier = nltk.classify.NaiveBayesClassifier.train(links_training_set)
+# uncomment when train data was edited
+Classification().train_classifiers(arguments_training_set, links_training_set)
 
-args_sklearn_classifier = SklearnClassifier(MultinomialNB()).train(arguments_training_set)
-links_sklearn_classifier = SklearnClassifier(MultinomialNB()).train(links_training_set)
+# --- Loading Classifiers from pickle file ----------------#
 
-args_logisticreg_classifier = SklearnClassifier(LogisticRegression()).train(arguments_training_set)
-links_logisticreg_classifier = SklearnClassifier(LogisticRegression()).train(links_training_set)
+##### Naive Bayes
+
+args_naivebayes_classifier = open('pickle_files/args_naivebayes.pickle', "rb")
+args_naivesentiment_classifier = pickle.load(args_naivebayes_classifier, encoding="latin1")
+args_naivebayes_classifier.close()
+
+links_naivebayes_classifier = open('pickle_files/links_naivebayes.pickle', "rb")
+links_naivesentiment_classifier = pickle.load(links_naivebayes_classifier)
+links_naivebayes_classifier.close()
 
 test_data = collector.get_test_data('essay81')
 
 # deeppavlov usage rusentiment_elmo_twitter_cnn.json
-
-# snips_model(["Hello! What is the weather in Boston tomorrow?"])
-print('1')
-# path_to_deeppavlov = 'D:\\education\\НГУ 8\\Диплом\\prog\\argument-mining-rus\\Lib\\site-packages\\deeppavlov\\configs\\classifiers'
-print('2')
-# can i save it to pickle files?
-# deeppavlov_model = build_model(path_to_deeppavlov + '\\rusentiment_elmo_twitter_cnn.json')
+#todo: save deeppavlov to pickle
 deeppavlov_model = build_model(configs.classifiers.sentiment_twitter, download=True)
-print('3')
 '''
 try get some predictions
 '''
