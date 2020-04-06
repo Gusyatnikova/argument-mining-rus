@@ -1,8 +1,6 @@
-# todo: rename file
 import os
 import pickle
 import nltk as nltk
-import pickle_files
 from nltk.classify import SklearnClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.naive_bayes import MultinomialNB, BernoulliNB
@@ -67,6 +65,11 @@ class Classification:
         self.set_logisticregression_classifier(arguments_training_set, links_training_set)
         pass
 
+    def load_classifier(self, filename):
+        classifier_file = open('pickle_files/'+filename, "rb")
+        classifier = pickle.load(classifier_file, encoding="latin1")
+        classifier_file.close()
+        return classifier
 
 
 
