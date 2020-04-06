@@ -6,7 +6,7 @@
 
 **Project uses**
  * [bratreader] for reading Brat Repositories
- * [deeppavlov] for sentiment analise  
+ * [deeppavlov] for sentiment analysis  
 
 
 
