@@ -9,21 +9,25 @@ from data_manager import DataManager
 correct_labels = ['Premise', 'Claim', 'MajorClaim']
 correct_links = ['Support', 'Attacks']
 
-divided_args = []
-divided_links = []
-
 class Classification:
 
     def __init__(self):
+        self.divided_args = []
+        self.divided_links = []
         pass
 
     def set_data(self, data):
         args = DataManager().filter_labels(data, correct_labels)
         links = DataManager().filter_links(data)
-        global divided_args
-        divided_args = DataManager().divide_sentences(args)
-        global divided_links
-        divided_links = DataManager().divide_sentences(links)
+        self.divided_args = DataManager().divide_sentences(args)
+        self.divided_links = DataManager().divide_sentences(links)
+
+    def get_divided_args(self):
+        return self.divided_args
+
+    def get_divided_links(self):
+        return self.divided_links
+
 
     @staticmethod
     def save_pickle(classifier, pickle_name):
