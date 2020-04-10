@@ -5,6 +5,8 @@ from data_collector import BratDataCollector
 from bratreader.repomodel import RepoModel
 from classification import Classification
 from deeppavlov import build_model, configs
+from operator import itemgetter
+import operator
 import os
 
 # will this path to brat repository be the field of UI?
@@ -16,6 +18,37 @@ data = collector.collect_data()
 classifier = Classification()
 classifier.set_data(data)
 arguments = classifier.get_divided_args()
+'''
+create frequency of word for claims and premices
+'''
+all_claims_words = []
+all_premices_words = []
+
+for item in arguments:
+    if item[1] == 'Claim':
+        all_premices_words.extend(item[0])
+    else:
+        all_claims_words.extend(item[0])
+
+claims_freq_list = []
+premices_freq_list = []
+already_in_claims = []
+already_in_premices = []
+
+for word in all_premices_words:
+    if word not in already_in_premices:
+        already_in_premices.append(word)
+        premices_freq_list.append((word, all_premices_words.count(word)))
+for word in all_claims_words:
+    if word not in already_in_claims:
+        already_in_claims.append(word)
+        claims_freq_list.append((word, all_claims_words.count(word)))
+
+premices_freq_list.sort(key=operator.itemgetter(1))
+premices_freq_list = premices_freq_list[::-1]
+claims_freq_list.sort(key=operator.itemgetter(1))
+claims_freq_list = claims_freq_list[::-1]
+
 links = classifier.get_divided_links()
 # how visualise results?
 arguments_features = classifier.getFeatures(arguments)
@@ -57,8 +90,10 @@ links_sklearn_classifier = classifier.load_classifier('links_sklearn.pickle')
 args_logisticregression_classifier = classifier.load_classifier('args_logisticregression.pickle')
 links_logisticregression_classifier = classifier.load_classifier('links_logisticregression.pickle')
 
-# deeppavlov_model = build_model(configs.classifiers.sentiment_twitter)
+deeppavlov_model = build_model(configs.classifiers.sentiment_twitter)
 # --- Get prediction for test data
+
+
 
 total_equals = 0
 total_sentences = 0
@@ -97,7 +132,6 @@ for i in range(81, 91):
             #      '\n sentiment: ', deeppavlov_model([sentence]))
     print(' all_sentences: ', len(test_data), ' matches: ', total_equals, ' matches%: ', total_equals / len(test_data))
     print("\n\ntotal sentences: ", total_sentences, ' total_equals: ', total_equals, 'common matches: ', total_equals/total_sentences)
-
 '''
 predicted_claims = []
 predicted_premises = []
