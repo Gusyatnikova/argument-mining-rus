@@ -1,20 +1,80 @@
 from pathlib import Path
-import classification
 import nltk
 from data_collector import BratDataCollector
 from bratreader.repomodel import RepoModel
 from classification import Classification
 from deeppavlov import build_model, configs
-from operator import itemgetter
 import operator
-import os
 
 # will this path to brat repository be the field of UI?
-brat_folder = Path('C:\\Users\\crysn\\Desktop\\Диплом\\prog\\essays\\original')
+brat_folder = Path('D:\\Диплом\\prog\\essays\\original')
+# brat_folder = Path('D:\\Диплом\\prog\\essays\\russian')
+
 brat_reader = RepoModel(brat_folder)
 
 collector = BratDataCollector(brat_reader)
 data = collector.collect_data()
+
+def get_sentiment_statistic(data, language, deeppavlov_model):
+    from data_manager import DataManager
+    correct_labels = ['Premise', 'Claim']
+    ru_sentiment = ['positive', 'neutral', 'negative']
+    en_sentiment = ['Positive', 'Neutral', 'Negative']
+    cur_sentiment = []
+    if language == 'ru':
+        cur_sentiment = ru_sentiment
+    if language == 'en':
+        cur_sentiment = en_sentiment
+
+    args = DataManager().filter_labels(data, correct_labels)
+    all_premises = 0
+    all_claims = 0
+    premises_neg = 0
+    premises_neutral = 0
+    premises_pos = 0
+    claims_neg = 0
+    claims_neutral = 0
+    claims_pos = 0
+    for tuple in args:
+        if tuple[0] == 'Claim':
+            all_claims = all_claims + 1
+            sentiment = deeppavlov_model([tuple[1]])[0]
+            if sentiment == cur_sentiment[0]:
+                claims_pos = claims_pos + 1
+            if sentiment == cur_sentiment[1]:
+                # claims_neutral = claims_neutral + 1
+                claims_pos = claims_pos + 1
+            if sentiment == cur_sentiment[2]:
+                claims_neg = claims_neg + 1
+        else:
+            all_premises = all_premises + 1
+            sentiment = deeppavlov_model([tuple[1]])[0]
+            if sentiment == cur_sentiment[0]:
+                premises_pos = premises_pos + 1
+            if sentiment == cur_sentiment[1]:
+               # premises_neutral = premises_neutral + 1
+               premises_pos = premises_pos + 1
+            if sentiment == cur_sentiment[2]:
+                premises_neg = premises_neg + 1
+    print('language: ', language, '\n',
+          'claims-pos: ', claims_pos/all_claims*100, '%\n',
+          'claims-neg: ', claims_neg/all_claims*100, '%\n',
+          'claims-neutral: ', claims_neutral/all_claims*100, '%\n',
+          'premises_pos: ', premises_pos/all_premises*100, '%\n',
+          'premises_neutral: ', premises_neutral/all_premises*100, '%\n',
+          'premises_neg: ', premises_neg/all_premises*100, '%\n',)
+    a = 4
+
+""" deeppavlov for english dataset """
+en_deeppavlov_model = build_model(configs.classifiers.sentiment_twitter)
+get_sentiment_statistic(data, 'en', en_deeppavlov_model)
+
+""" deeppavlov for russian dataset """
+# ru_deeppavlov_model = build_model(configs.classifiers.rusentiment_cnn, download=True)
+# get_sentiment_statistic(data, 'ru', ru_deeppavlov_model)
+
+
+
 classifier = Classification()
 classifier.set_data(data)
 arguments = classifier.get_divided_args()
@@ -76,7 +136,7 @@ arguments_training_set = nltk.classify.apply_features(extract_features, argument
 links_training_set = nltk.classify.apply_features(extract_features, links)
 
 # --- uncomment when train data was edited
-# classifier.train_classifiers(arguments_training_set, links_training_set)
+classifier.train_classifiers(arguments_training_set, links_training_set)
 # ---
 
 # --- loading classifiers from pickle package ----------------#
@@ -90,8 +150,10 @@ links_sklearn_classifier = classifier.load_classifier('links_sklearn.pickle')
 args_logisticregression_classifier = classifier.load_classifier('args_logisticregression.pickle')
 links_logisticregression_classifier = classifier.load_classifier('links_logisticregression.pickle')
 
-deeppavlov_model = build_model(configs.classifiers.sentiment_twitter)
+
 # --- Get prediction for test data
+
+
 
 
 
@@ -128,8 +190,7 @@ for i in range(81, 91):
     #         print('\n Prediction is equal to: ', (sentence, sklearn_prediction))
             with open('report_HandleTokenize.txt', 'a') as report_file:
                 report_file.write('\n sen: ' + sentence + ' prediction: --' + sklearn_prediction + '--')
-            # print('\n Prediction is equal to: ', (sentence, sklearn_prediction),
-            #      '\n sentiment: ', deeppavlov_model([sentence]))
+            # print('\n Prediction is equal to: ', (sentence, sklearn_prediction), '\n sentiment: ', deeppavlov_model([sentence]))
     print(' all_sentences: ', len(test_data), ' matches: ', total_equals, ' matches%: ', total_equals / len(test_data))
     print("\n\ntotal sentences: ", total_sentences, ' total_equals: ', total_equals, 'common matches: ', total_equals/total_sentences)
 '''
@@ -158,7 +219,4 @@ print("Sklearn : ",ArgSklearnBayesScore,LinkSklearnBayesScore)
 print("Logistic reg: ",ArglogBayesScore,LinklogBayesScore)
 '''
 
-
-
-a = 4
 
