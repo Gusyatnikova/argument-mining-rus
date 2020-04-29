@@ -70,7 +70,6 @@ def _createannotationobjects(annotations):
 
         split = t.split()
         label = split[0]
-
         spans = [[int(span.split()[0]), int(span.split()[1])]
                  for span in u" ".join(split[1:]).split(";")]
 
